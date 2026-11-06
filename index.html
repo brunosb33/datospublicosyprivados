@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>¿Público o privado? 🔐 | Ciberseguridad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0f1b2d;
+    --bg2:#16263d;
+    --card:#fdfbf6;
+    --ink:#1b2433;
+    --muted:#5b6678;
+    --mint:#2ec4a6;
+    --mint-soft:#d8f5ee;
+    --coral:#ff6b5b;
+    --coral-soft:#ffe3df;
+    --amber:#ffb627;
+    --amber-soft:#fff1cf;
+    --violet:#7b6cf6;
+    --violet-soft:#e7e4ff;
+    --line:#e6e1d6;
+    --radius:18px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:"Atkinson Hyperlegible",system-ui,sans-serif;
+    font-size:17px;line-height:1.55;color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, rgba(46,196,166,.18), transparent 40%),
+      radial-gradient(circle at 85% 30%, rgba(123,108,246,.18), transparent 45%),
+      linear-gradient(180deg,var(--bg),var(--bg2));
+    background-attachment:fixed;
+    min-height:100vh;
+  }
+  h1,h2,h3{font-family:"Sora",sans-serif;line-height:1.2;margin:0}
+  .mono{font-family:"JetBrains Mono",monospace}
+
+  /* ---------- Cabecera ---------- */
+  header{
+    max-width:960px;margin:0 auto;padding:48px 20px 24px;color:#fff;
+  }
+  .tag{
+    display:inline-block;font-family:"JetBrains Mono",monospace;font-size:.78rem;
+    letter-spacing:.08em;text-transform:uppercase;
+    background:rgba(46,196,166,.15);color:var(--mint);
+    border:1px solid rgba(46,196,166,.4);padding:6px 12px;border-radius:999px;
+  }
+  header h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:800;margin:16px 0 10px}
+  header h1 span{color:var(--mint)}
+  header p{color:#c9d3e3;max-width:640px;margin:0}
+  .meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+  .meta div{
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+    padding:8px 14px;border-radius:12px;font-size:.92rem;color:#e6ecf5;
+  }
+  .meta b{color:var(--amber)}
+
+  /* ---------- Barra de progreso ---------- */
+  .progress-wrap{
+    position:sticky;top:0;z-index:20;
+    background:rgba(15,27,45,.92);backdrop-filter:blur(8px);
+    border-bottom:1px solid rgba(255,255,255,.08);
+  }
+  .progress-inner{max-width:960px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:14px}
+  nav{display:flex;gap:6px;flex-wrap:wrap}
+  nav a{
+    font-family:"JetBrains Mono",monospace;font-size:.78rem;color:#c9d3e3;text-decoration:none;
+    padding:5px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.12);
+  }
+  nav a:hover{background:rgba(255,255,255,.08);color:#fff}
+  .bar{flex:1;height:8px;background:rgba(255,255,255,.1);border-radius:99px;overflow:hidden;min-width:80px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--mint),var(--violet));transition:width .4s}
+  .pct{font-family:"JetBrains Mono",monospace;color:var(--mint);font-size:.85rem;min-width:42px;text-align:right}
+
+  main{max-width:960px;margin:0 auto;padding:24px 20px 80px}
+
+  /* ---------- Tarjetas ---------- */
+  .card{
+    background:var(--card);border-radius:var(--radius);padding:28px;margin-bottom:28px;
+    box-shadow:0 18px 40px rgba(0,0,0,.25);
+  }
+  .card-head{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+  .num{
+    flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+    font-family:"Sora";font-weight:800;font-size:1.2rem;color:#fff;
+  }
+  .p1 .num{background:var(--mint)}
+  .p2 .num{background:var(--violet)}
+  .p3 .num{background:var(--amber);color:var(--ink)}
+  .p4 .num{background:var(--coral)}
+  .p5 .num{background:var(--bg)}
+  .card h2{font-size:1.5rem}
+  .consigna{color:var(--muted);margin:4px 0 22px}
+  .consigna b{color:var(--ink)}
+
+  /* Estudiante */
+  .student{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+  label.lbl{font-weight:700;font-size:.9rem;display:block;margin-bottom:6px}
+  input[type=text],textarea,select{
+    width:100%;font:inherit;color:var(--ink);background:#fff;
+    border:2px solid var(--line);border-radius:12px;padding:11px 14px;transition:border-color .2s, box-shadow .2s;
+  }
+  input[type=text]:focus,textarea:focus,select:focus{outline:none;border-color:var(--violet);box-shadow:0 0 0 4px var(--violet-soft)}
+  textarea{min-height:96px;resize:vertical}
+
+  /* Parte 1 */
+  .q1-grid{display:grid;gap:12px}
+  .item{
+    border:2px solid var(--line);border-radius:14px;padding:14px 16px;
+    display:grid;grid-template-columns:1fr auto;gap:10px 16px;align-items:center;background:#fff;
+    transition:border-color .2s, background .2s;
+  }
+  .item .txt{font-weight:700}
+  .item .txt small{font-family:"JetBrains Mono";color:var(--muted);font-weight:500;margin-right:6px}
+  .opts{display:flex;gap:6px}
+  .opts input{position:absolute;opacity:0;pointer-events:none}
+  .opts label{
+    cursor:pointer;padding:7px 13px;border-radius:10px;font-size:.88rem;font-weight:700;
+    border:2px solid var(--line);background:#fafafa;user-select:none;transition:all .15s;
+  }
+  .opts label:hover{border-color:#bbb}
+  .opts input:focus-visible + label{outline:3px solid var(--violet);outline-offset:2px}
+  .opts input[value=publico]:checked + label{background:var(--mint-soft);border-color:var(--mint);color:#0c6b58}
+  .opts input[value=privado]:checked + label{background:var(--coral-soft);border-color:var(--coral);color:#a3281c}
+  .opts input[value=depende]:checked + label{background:var(--amber-soft);border-color:var(--amber);color:#7a5200}
+  .opts input:disabled + label{cursor:not-allowed;opacity:.55}
+  .opts input:disabled:checked + label{opacity:1}
+  .btn:disabled{opacity:.6;cursor:not-allowed;box-shadow:none}
+  .fb{grid-column:1/-1;font-size:.92rem;display:none;padding:10px 12px;border-radius:10px}
+  .item.ok{border-color:var(--mint);background:#f3fcf9}
+  .item.ok .fb{display:block;background:var(--mint-soft)}
+  .item.bad{border-color:var(--coral);background:#fff7f6}
+  .item.bad .fb{display:block;background:var(--coral-soft)}
+  .item.empty{border-color:var(--amber)}
+
+  .btn{
+    font-family:"Sora";font-weight:600;font-size:.95rem;cursor:pointer;
+    border:none;border-radius:12px;padding:12px 20px;display:inline-flex;align-items:center;gap:8px;
+    transition:transform .1s, box-shadow .2s;
+  }
+  .btn:active{transform:translateY(1px)}
+  .btn-main{background:var(--bg);color:#fff;box-shadow:0 6px 0 #050b14}
+  .btn-main:hover{box-shadow:0 6px 0 #050b14, 0 0 0 4px var(--mint-soft)}
+  .btn-ghost{background:transparent;border:2px solid var(--line);color:var(--ink)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:20px}
+  .score{
+    font-family:"JetBrains Mono";font-weight:700;padding:10px 14px;border-radius:12px;
+    background:var(--violet-soft);color:#3d2fc0;display:none;
+  }
+
+  /* Preguntas abiertas */
+  .q{margin-bottom:20px}
+  .q p{margin:0 0 8px;font-weight:700}
+  .q p .n{font-family:"JetBrains Mono";color:var(--violet);margin-right:6px}
+  .hint{font-size:.85rem;color:var(--muted);margin-top:4px;text-align:right;font-family:"JetBrains Mono"}
+
+  /* Parte 3 reglas */
+  .rules{display:grid;gap:10px}
+  .rule{display:flex;gap:10px;align-items:center}
+  .rule span{
+    flex:none;width:36px;height:36px;border-radius:10px;background:var(--amber-soft);
+    display:grid;place-items:center;font-family:"JetBrains Mono";font-weight:700;color:#7a5200;
+  }
+
+  .conclusion{
+    margin-top:22px;padding:18px 20px;border-radius:14px;
+    background:linear-gradient(135deg,var(--mint-soft),var(--violet-soft));
+    border-left:6px solid var(--mint);
+  }
+  .conclusion h3{font-size:1rem;margin-bottom:6px}
+  .conclusion p{margin:0}
+
+  /* Parte 4 perfil */
+  .profile{
+    display:grid;grid-template-columns:220px 1fr;gap:0;border-radius:16px;overflow:hidden;
+    border:2px solid var(--ink);margin-bottom:24px;background:#fff;
+  }
+  .profile-side{
+    background:var(--bg);color:#fff;padding:22px;text-align:center;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  }
+  .avatar{
+    width:84px;height:84px;border-radius:50%;
+    background:conic-gradient(var(--mint),var(--violet),var(--coral),var(--amber),var(--mint));
+    display:grid;place-items:center;font-size:2.4rem;
+  }
+  .avatar b{width:72px;height:72px;border-radius:50%;background:var(--bg);display:grid;place-items:center}
+  .profile-side h3{font-size:1.2rem}
+  .profile-side small{color:#9fb0c8;font-family:"JetBrains Mono"}
+  .posts{list-style:none;margin:0;padding:8px 0}
+  .posts li{
+    padding:12px 20px;border-bottom:1px dashed var(--line);display:flex;gap:12px;align-items:center;cursor:pointer;
+    transition:background .15s;
+  }
+  .posts li:last-child{border-bottom:none}
+  .posts li:hover{background:#faf7ef}
+  .posts li .ico{font-size:1.3rem;flex:none}
+  .posts li.flag{background:var(--coral-soft)}
+  .posts li.flag::after{content:"⚠️ riesgo";margin-left:auto;font-family:"JetBrains Mono";font-size:.75rem;color:#a3281c;white-space:nowrap}
+  .tip{font-size:.88rem;color:var(--muted);margin:-14px 0 22px;font-style:italic}
+
+  /* Parte 5 situaciones */
+  .sit{
+    border-radius:16px;padding:18px 20px;margin-bottom:16px;background:#fff;
+    border:2px solid var(--line);position:relative;
+  }
+  .sit-top{display:flex;gap:12px;align-items:flex-start;margin-bottom:10px}
+  .light{flex:none;display:flex;flex-direction:column;gap:4px;background:var(--bg);padding:6px;border-radius:10px}
+  .light i{width:12px;height:12px;border-radius:50%;background:#2a3a55;display:block}
+  .light i:nth-child(1){background:var(--coral)}
+  .sit:nth-child(even) .light i:nth-child(1){background:#2a3a55}
+  .sit:nth-child(even) .light i:nth-child(2){background:var(--amber)}
+  .sit h3{font-size:1.05rem;margin-bottom:4px}
+  .sit p{margin:0;color:var(--muted)}
+
+  .challenge{
+    margin-top:26px;padding:22px;border-radius:16px;background:var(--bg);color:#fff;
+  }
+  .challenge h3{color:var(--amber);margin-bottom:6px}
+  .challenge p{color:#c9d3e3;margin:0 0 14px}
+  .challenge select,.challenge textarea{background:#fff}
+  .challenge textarea{margin-top:10px}
+
+  /* Entrega */
+  .deliver{text-align:center}
+  .deliver p{color:var(--muted);max-width:560px;margin:8px auto 18px}
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);
+    background:var(--ink);color:#fff;padding:12px 20px;border-radius:12px;font-weight:700;
+    transition:transform .3s;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+
+  footer{text-align:center;color:#8193ad;font-size:.85rem;padding:0 20px 40px;font-family:"JetBrains Mono"}
+
+  @media (max-width:680px){
+    .student{grid-template-columns:1fr}
+    .item{grid-template-columns:1fr}
+    .opts{flex-wrap:wrap}
+    .profile{grid-template-columns:1fr}
+    .card{padding:20px}
+    nav{display:none}
+  }
+  @media print{
+    body{background:#fff}
+    header{color:var(--ink)} header p,.meta div{color:var(--ink)}
+    .progress-wrap,.actions,.deliver .btn,.toast{display:none!important}
+    .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="tag">// Ciberseguridad y privacidad digital</span>
+  <h1>¿Público o <span>privado</span>? 🔐</h1>
+  <p>Aprendé a diferenciar los datos públicos de los privados y a decidir qué información es seguro compartir en Internet.</p>
+  <div class="meta">
+    <div>🎯 <b>Edad:</b> 13–14 años</div>
+    <div>🧩 <b>5 partes</b> + desafío final</div>
+    <div>💾 Tus respuestas se guardan en este navegador</div>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <nav>
+      <a href="#p1">P1</a><a href="#p2">P2</a><a href="#p3">P3</a><a href="#p4">P4</a><a href="#p5">P5</a>
+    </nav>
+    <div class="bar"><i id="barFill"></i></div>
+    <span class="pct" id="pct">0%</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- Datos del estudiante -->
+  <section class="card">
+    <div class="student">
+      <div>
+        <label class="lbl" for="nombre">Nombre y apellido</label>
+        <input type="text" id="nombre" data-save placeholder="Escribí tu nombre">
+      </div>
+      <div>
+        <label class="lbl" for="grupo">Grupo</label>
+        <input type="text" id="grupo" data-save placeholder="Ej: 9°1">
+      </div>
+    </div>
+  </section>
+
+  <!-- PARTE 1 -->
+  <section class="card p1" id="p1">
+    <div class="card-head"><div class="num">1</div><h2>Clasificamos los datos</h2></div>
+    <p class="consigna"><b>Consigna:</b> leé cada ejemplo y marcá si considerás que es un dato <b>público</b>, <b>privado</b> o si <b>depende</b>.</p>
+    <div class="q1-grid" id="q1"></div>
+    <div class="actions">
+      <button class="btn btn-main" id="corregir">✔ Corregir respuestas</button>
+      <span class="score" id="score"></span>
+    </div>
+  </section>
+
+  <!-- PARTE 2 -->
+  <section class="card p2" id="p2">
+    <div class="card-head"><div class="num">2</div><h2>Analizamos situaciones</h2></div>
+    <p class="consigna"><b>Consigna:</b> respondé con tus propias palabras.</p>
+    <div class="q"><p><span class="n">2.1</span>Un estudiante publica una foto con el uniforme de su institución y la ubicación activada. ¿Qué información está compartiendo y qué riesgos puede tener?</p><textarea data-save id="p2_1"></textarea></div>
+    <div class="q"><p><span class="n">2.2</span>Una persona desconocida te pide tu contraseña para regalarte monedas en un videojuego. ¿Qué harías y por qué?</p><textarea data-save id="p2_2"></textarea></div>
+    <div class="q"><p><span class="n">2.3</span>Un compañero publica una fotografía tuya sin consultarte. ¿Cómo actuarías?</p><textarea data-save id="p2_3"></textarea></div>
+    <div class="q"><p><span class="n">2.4</span>¿Un dato que es público siempre es seguro de compartir? Explicá tu respuesta.</p><textarea data-save id="p2_4"></textarea></div>
+  </section>
+
+  <!-- PARTE 3 -->
+  <section class="card p3" id="p3">
+    <div class="card-head"><div class="num">3</div><h2>Creamos nuestras reglas de seguridad</h2></div>
+    <p class="consigna"><b>Consigna:</b> escribí cinco recomendaciones para que otros adolescentes protejan sus datos personales cuando usan redes sociales, videojuegos o aplicaciones.</p>
+    <div class="rules">
+      <div class="rule"><span>01</span><input type="text" data-save id="r1" placeholder="Regla 1"></div>
+      <div class="rule"><span>02</span><input type="text" data-save id="r2" placeholder="Regla 2"></div>
+      <div class="rule"><span>03</span><input type="text" data-save id="r3" placeholder="Regla 3"></div>
+      <div class="rule"><span>04</span><input type="text" data-save id="r4" placeholder="Regla 4"></div>
+      <div class="rule"><span>05</span><input type="text" data-save id="r5" placeholder="Regla 5"></div>
+    </div>
+    <div class="conclusion">
+      <h3>💡 Conclusión</h3>
+      <p>Compartí información únicamente cuando sea necesario, revisá quién puede verla y recordá que incluso los datos aparentemente inofensivos pueden revelar información sobre vos. Los datos públicos no siempre son seguros, y los datos privados deben protegerse especialmente.</p>
+    </div>
+  </section>
+
+  <!-- PARTE 4 -->
+  <section class="card p4" id="p4">
+    <div class="card-head"><div class="num">4</div><h2>Detectives de la privacidad 🕵️</h2></div>
+    <p class="consigna"><b>Consigna:</b> leé el siguiente perfil ficticio y analizá qué información podría ponerlo en riesgo.</p>
+
+    <div class="profile">
+      <div class="profile-side">
+        <div class="avatar"><b>🧑</b></div>
+        <h3>Lucas</h3>
+        <small>@lucas_perfil_ficticio</small>
+      </div>
+      <ul class="posts" id="posts">
+        <li><span class="ico">🎂</span>Tiene 14 años.</li>
+        <li><span class="ico">👕</span>Publica fotos con el uniforme de su institución.</li>
+        <li><span class="ico">🏠</span>Comparte historias indicando que está solo en su casa.</li>
+        <li><span class="ico">📍</span>Su perfil muestra el nombre de su barrio.</li>
+        <li><span class="ico">🐶</span>Utiliza el nombre de su mascota como parte de su contraseña.</li>
+        <li><span class="ico">✈️</span>Publica que su familia se va de vacaciones durante una semana.</li>
+      </ul>
+    </div>
+    <p class="tip">Tip: tocá las publicaciones que te parezcan riesgosas para marcarlas.</p>
+
+    <div class="q"><p><span class="n">4.1</span>Identificá al menos cuatro datos o publicaciones que podrían comprometer la seguridad de Lucas.</p><textarea data-save id="p4_1"></textarea></div>
+    <div class="q"><p><span class="n">4.2</span>¿Qué información podría utilizar una persona desconocida para identificarlo o localizarlo?</p><textarea data-save id="p4_2"></textarea></div>
+    <div class="q"><p><span class="n">4.3</span>¿Por qué es peligroso publicar que está solo en su casa o que su familia está de viaje?</p><textarea data-save id="p4_3"></textarea></div>
+    <div class="q"><p><span class="n">4.4</span>¿Qué cambios le recomendarías para mejorar su seguridad digital?</p><textarea data-save id="p4_4"></textarea></div>
+    <div class="q"><p><span class="n">4.5</span>Elegí dos publicaciones del perfil y explicá cómo podría compartir esos momentos de una manera más segura.</p><textarea data-save id="p4_5"></textarea></div>
+  </section>
+
+  <!-- PARTE 5 -->
+  <section class="card p5" id="p5">
+    <div class="card-head"><div class="num">5</div><h2>¿Qué harías en esta situación? 🚦</h2></div>
+    <p class="consigna"><b>Consigna:</b> leé cada situación y escribí qué harías. Justificá tus decisiones.</p>
+
+    <div id="sits">
+      <div class="sit">
+        <div class="sit-top"><div class="light"><i></i><i></i><i></i></div>
+          <div><h3>1. Un sorteo sospechoso 🎁</h3><p>Una cuenta te dice que ganaste un celular, pero para recibirlo tenés que enviar tu nombre completo, dirección y una foto de tu documento. ¿Qué harías?</p></div></div>
+        <textarea data-save id="p5_1"></textarea>
+      </div>
+      <div class="sit">
+        <div class="sit-top"><div class="light"><i></i><i></i><i></i></div>
+          <div><h3>2. Una aplicación nueva 📱</h3><p>Descargás una aplicación de edición de fotos que solicita acceso a tus contactos, micrófono, cámara y ubicación. ¿Le darías todos los permisos? ¿Cómo decidirías cuáles aceptar?</p></div></div>
+        <textarea data-save id="p5_2"></textarea>
+      </div>
+      <div class="sit">
+        <div class="sit-top"><div class="light"><i></i><i></i><i></i></div>
+          <div><h3>3. Una contraseña compartida 🔑</h3><p>Un amigo te pide tu contraseña para entrar a tu cuenta y ayudarte con una publicación. ¿Se la darías? ¿Por qué?</p></div></div>
+        <textarea data-save id="p5_3"></textarea>
+      </div>
+      <div class="sit">
+        <div class="sit-top"><div class="light"><i></i><i></i><i></i></div>
+          <div><h3>4. Una foto viral 📸</h3><p>En el grupo de clase comparten una foto vergonzosa de un compañero sin su permiso. ¿Qué harías para evitar que se siga difundiendo?</p></div></div>
+        <textarea data-save id="p5_4"></textarea>
+      </div>
+      <div class="sit">
+        <div class="sit-top"><div class="light"><i></i><i></i><i></i></div>
+          <div><h3>5. Una cuenta desconocida 👤</h3><p>Una persona que no conocés te sigue, comenta tus publicaciones y te pregunta dónde vivís y a qué hora salís de estudiar. ¿Cómo actuarías?</p></div></div>
+        <textarea data-save id="p5_5"></textarea>
+      </div>
+    </div>
+
+    <div class="challenge">
+      <h3>🏆 Desafío final</h3>
+      <p>Elegí una de las cinco situaciones y redactá un mensaje breve para aconsejar a un adolescente sobre cómo proteger sus datos y su privacidad en Internet.</p>
+      <select data-save id="des_sit">
+        <option value="">— Elegí una situación —</option>
+        <option>1. Un sorteo sospechoso</option>
+        <option>2. Una aplicación nueva</option>
+        <option>3. Una contraseña compartida</option>
+        <option>4. Una foto viral</option>
+        <option>5. Una cuenta desconocida</option>
+      </select>
+      <textarea data-save id="des_msg" placeholder="Escribí tu mensaje acá..."></textarea>
+    </div>
+  </section>
+
+  <!-- ENTREGA -->
+  <section class="card deliver">
+    <h2>📤 Entregar la actividad</h2>
+    <p>Cuando termines, descargá tus respuestas o guardalas como PDF para entregarlas a tu docente.</p>
+    <div class="actions" style="justify-content:center">
+      <button class="btn btn-main" id="descargar">⬇ Descargar respuestas (.txt)</button>
+      <button class="btn btn-ghost" id="imprimir">🖨 Guardar como PDF</button>
+    </div>
+  </section>
+
+</main>
+
+<footer>Ciencias de la Computación · Unidad de Ciberseguridad</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- Datos Parte 1 ---------- */
+const items = [
+  {t:"Nombre de tu equipo de fútbol favorito", ok:["publico","depende"],
+   fb:"Es un gusto personal que suele ser seguro compartir. Ojo: combinado con otros datos ayuda a armar un perfil tuyo."},
+  {t:"Tu contraseña de Instagram", ok:["privado"],
+   fb:"Siempre privada. Es la llave de tu cuenta: no se comparte con nadie, ni con amigos."},
+  {t:"Una foto de un paisaje que visitaste", ok:["publico","depende"],
+   fb:"Puede ser pública, pero depende: si tiene la ubicación activada o se publica mientras estás ahí, revela dónde estás."},
+  {t:"Tu dirección de domicilio", ok:["privado"],
+   fb:"Privada. Permite que cualquiera sepa dónde vivís."},
+  {t:"Tu número de teléfono personal", ok:["privado"],
+   fb:"Privado. Puede usarse para contactarte sin permiso, estafas o para recuperar tus cuentas."},
+  {t:"Tu opinión sobre una película", ok:["publico"],
+   fb:"Pública. Es una opinión que podés compartir sin exponer datos sensibles (siempre con respeto)."},
+  {t:"Tu ubicación en tiempo real", ok:["privado"],
+   fb:"Privada. Muestra exactamente dónde estás en este momento; solo la comparte con personas de confianza."},
+  {t:"El nombre de tu institución educativa", ok:["depende","privado"],
+   fb:"Depende. Es un dato conocido por muchos, pero publicado junto a horarios o fotos permite saber dónde encontrarte."},
+  {t:"Una foto donde aparecen tus amigos sin su permiso", ok:["privado"],
+   fb:"Privada. La imagen de otras personas es su dato personal: antes de publicarla hay que pedir permiso."},
+  {t:"Tu número de documento de identidad", ok:["privado"],
+   fb:"Siempre privado. Puede usarse para hacerse pasar por vos."}
+];
+const labels = {publico:"Público", privado:"Privado", depende:"Depende"};
+const q1 = document.getElementById("q1");
+items.forEach((it,i)=>{
+  const d = document.createElement("div");
+  d.className = "item"; d.id = "it"+i;
+  d.innerHTML = `<div class="txt"><small>${String(i+1).padStart(2,"0")}</small>${it.t}</div>
+    <div class="opts">${Object.keys(labels).map(v=>`
+      <input type="radio" name="q${i}" id="q${i}_${v}" value="${v}" data-save-radio>
+      <label for="q${i}_${v}">${labels[v]}</label>`).join("")}</div>
+    <div class="fb"></div>`;
+  q1.appendChild(d);
+});
+
+let q1Locked = false;
+function applyCorrection(){
+  let ok=0;
+  items.forEach((it,i)=>{
+    const box = document.getElementById("it"+i);
+    const sel = document.querySelector(`input[name=q${i}]:checked`);
+    box.classList.remove("ok","bad","empty");
+    const good = sel && it.ok.includes(sel.value);
+    if(good) ok++;
+    box.classList.add(good?"ok":"bad");
+    box.querySelector(".fb").textContent = good ? "✅ Correcta" : "❌ Incorrecta";
+    document.querySelectorAll(`input[name=q${i}]`).forEach(r=>r.disabled=true);
+  });
+  q1Locked = true;
+  const btn = document.getElementById("corregir");
+  btn.disabled = true; btn.textContent = "🔒 Respuestas corregidas";
+  const s = document.getElementById("score");
+  s.style.display="inline-block";
+  s.textContent = `${ok}/${items.length} correctas`;
+}
+document.getElementById("corregir").onclick = ()=>{
+  if(q1Locked) return;
+  let faltan = 0;
+  items.forEach((_,i)=>{
+    const box = document.getElementById("it"+i);
+    box.classList.remove("empty");
+    if(!document.querySelector(`input[name=q${i}]:checked`)){ box.classList.add("empty"); faltan++; }
+  });
+  if(faltan){ toast(`⚠ Te faltan ${faltan} por responder`); return; }
+  applyCorrection();
+  saveAll();
+  toast("🔒 Corregido. Ya no se pueden cambiar las respuestas.");
+};
+
+/* ---------- Parte 4: marcar publicaciones ---------- */
+document.querySelectorAll("#posts li").forEach((li,i)=>{
+  li.onclick = ()=>{ li.classList.toggle("flag"); saveAll(); };
+});
+
+/* ---------- Guardado local ---------- */
+const KEY = "publico_privado_v1";
+function store(k,v){ try{ const d=JSON.parse(localStorage.getItem(KEY)||"{}"); d[k]=v; localStorage.setItem(KEY,JSON.stringify(d)); }catch(e){} }
+function saveAll(){
+  const d = {};
+  document.querySelectorAll("[data-save]").forEach(el=>d[el.id]=el.value);
+  document.querySelectorAll("[data-save-radio]:checked").forEach(el=>d[el.name]=el.value);
+  d.q1Locked = q1Locked;
+  d.flags = [...document.querySelectorAll("#posts li")].map(li=>li.classList.contains("flag"));
+  try{ localStorage.setItem(KEY, JSON.stringify(d)); }catch(e){}
+}
+function loadAll(){
+  let d={}; try{ d = JSON.parse(localStorage.getItem(KEY)||"{}"); }catch(e){}
+  document.querySelectorAll("[data-save]").forEach(el=>{ if(d[el.id]!=null) el.value=d[el.id]; });
+  items.forEach((_,i)=>{ if(d["q"+i]){ const r=document.getElementById(`q${i}_${d["q"+i]}`); if(r) r.checked=true; }});
+  if(Array.isArray(d.flags)) document.querySelectorAll("#posts li").forEach((li,i)=>li.classList.toggle("flag",!!d.flags[i]));
+  if(d.q1Locked) applyCorrection();
+}
+document.addEventListener("input", ()=>{ saveAll(); updateProgress(); });
+document.addEventListener("change", ()=>{ saveAll(); updateProgress(); });
+
+/* ---------- Progreso ---------- */
+function updateProgress(){
+  const fields = [...document.querySelectorAll("[data-save]")].filter(el=>!["nombre","grupo"].includes(el.id));
+  let total = fields.length + items.length, done = 0;
+  fields.forEach(el=>{ if(el.value.trim()) done++; });
+  items.forEach((_,i)=>{ if(document.querySelector(`input[name=q${i}]:checked`)) done++; });
+  const p = Math.round(done/total*100);
+  document.getElementById("barFill").style.width = p+"%";
+  document.getElementById("pct").textContent = p+"%";
+}
+
+/* ---------- Exportar ---------- */
+function val(id){ const el=document.getElementById(id); return el && el.value.trim() ? el.value.trim() : "(sin responder)"; }
+function qText(sel){ return document.querySelector(sel).closest(".q, .sit").querySelector("p").textContent.trim(); }
+function buildReport(){
+  const L=[];
+  L.push("¿PÚBLICO O PRIVADO? — Ciberseguridad y privacidad digital");
+  L.push("Estudiante: "+val("nombre")+"   Grupo: "+val("grupo"));
+  L.push("Fecha: "+new Date().toLocaleDateString("es-UY"));
+  L.push("");
+  L.push("PARTE 1. Clasificamos los datos");
+  items.forEach((it,i)=>{
+    const s=document.querySelector(`input[name=q${i}]:checked`);
+    L.push(`${i+1}. ${it.t}: ${s?labels[s.value]:"(sin responder)"}`+(s?(it.ok.includes(s.value)?"  ✔":"  ✘"):""));
+  });
+  const sc=document.getElementById("score").textContent; if(sc) L.push("Resultado: "+sc);
+  L.push("");
+  L.push("PARTE 2. Analizamos situaciones");
+  ["p2_1","p2_2","p2_3","p2_4"].forEach(id=>{ L.push(qText("#"+id)); L.push("→ "+val(id)); L.push(""); });
+  L.push("PARTE 3. Nuestras reglas de seguridad");
+  ["r1","r2","r3","r4","r5"].forEach((id,i)=>L.push(`${i+1}. ${val(id)}`));
+  L.push("");
+  L.push("PARTE 4. Detectives de la privacidad");
+  const fl=[...document.querySelectorAll("#posts li")].filter(li=>li.classList.contains("flag")).map(li=>"- "+li.textContent.trim());
+  L.push("Publicaciones marcadas como riesgosas:"); L.push(fl.length?fl.join("\n"):"(ninguna)"); L.push("");
+  ["p4_1","p4_2","p4_3","p4_4","p4_5"].forEach(id=>{ L.push(qText("#"+id)); L.push("→ "+val(id)); L.push(""); });
+  L.push("PARTE 5. ¿Qué harías en esta situación?");
+  ["p5_1","p5_2","p5_3","p5_4","p5_5"].forEach(id=>{
+    const sit=document.getElementById(id).closest(".sit");
+    L.push(sit.querySelector("h3").textContent.trim()); L.push("→ "+val(id)); L.push("");
+  });
+  L.push("DESAFÍO FINAL");
+  L.push("Situación elegida: "+val("des_sit"));
+  L.push("Mensaje: "+val("des_msg"));
+  return L.join("\n");
+}
+document.getElementById("descargar").onclick = ()=>{
+  const nombre = (document.getElementById("nombre").value.trim()||"estudiante").replace(/\s+/g,"_");
+  const blob = new Blob([buildReport()],{type:"text/plain;charset=utf-8"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = `publico_o_privado_${nombre}.txt`;
+  document.body.appendChild(a); a.click(); a.remove();
+  toast("📄 Archivo descargado");
+};
+document.getElementById("imprimir").onclick = ()=>window.print();
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); setTimeout(()=>t.classList.remove("show"),2200); }
+
+loadAll(); updateProgress();
+</script>
+</body>
+</html>
